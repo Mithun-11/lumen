@@ -11,6 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function SiteHeader() {
     return (
@@ -48,6 +49,7 @@ export function SiteHeader() {
                         <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" asChild>
                             <Link href="/register">Create Account</Link>
                         </Button>
+                        <ModeToggle />
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

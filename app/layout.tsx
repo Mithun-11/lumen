@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(inter.variable, outfit.variable, "dark")}>
+    <html lang="en" className={cn(inter.variable, outfit.variable)} suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -37,18 +38,25 @@ export default function RootLayout({
           geistMono.variable
         )}
       >
-        <div className="relative flex min-h-screen flex-col">
-          <SmoothScroll />
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t py-6 md:py-0">
-            <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row mx-auto px-4">
-              <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-                Built by Antigravity. Source code available on GitHub.
-              </p>
-            </div>
-          </footer>
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="relative flex min-h-screen flex-col">
+            <SmoothScroll />
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <footer className="border-t py-6 md:py-0">
+              <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row mx-auto px-4">
+                <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
+                  Built by Antigravity. Source code available on GitHub.
+                </p>
+              </div>
+            </footer>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
