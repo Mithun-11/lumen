@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Clapperboard, Loader2 } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 
-export default function LoginPage() {
-    const { login } = useAuth();
+export default function RegisterPage() {
+    const { register } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -22,12 +22,13 @@ export default function LoginPage() {
 
         const formData = new FormData(e.currentTarget);
         const email = formData.get("email") as string;
+        const username = formData.get("username") as string;
         const password = formData.get("password") as string;
 
         try {
-            await login({ email, password });
+            await register({ email, username, password });
         } catch (err: any) {
-            setError(err.message || "Invalid email or password");
+            setError(err.message || "Registration failed");
             setLoading(false);
         }
     };
@@ -36,8 +37,8 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
             {/* Cinematic Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] opacity-40 animate-pulse" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px] opacity-40" />
+                <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] opacity-40 animate-pulse" />
+                <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px] opacity-40" />
             </div>
 
             <div className="w-full max-w-md p-4 animate-in fade-in zoom-in duration-500">
@@ -54,9 +55,9 @@ export default function LoginPage() {
 
                 <Card className="border-border/50 shadow-2xl bg-card/50 backdrop-blur-xl">
                     <CardHeader className="space-y-1 text-center pb-2">
-                        <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">Create an account</CardTitle>
                         <CardDescription className="text-muted-foreground">
-                            Enter your credentials to access your diary
+                            Join the community of film lovers
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -73,15 +74,18 @@ export default function LoginPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="password">Password</Label>
-                                    <Link
-                                        href="/forgot-password"
-                                        className="text-xs text-muted-foreground hover:text-primary transition-colors hover:underline"
-                                    >
-                                        Forgot password?
-                                    </Link>
-                                </div>
+                                <Label htmlFor="username">Username</Label>
+                                <Input
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    required
+                                    placeholder="cinephile123"
+                                    className="bg-background/50 border-input/50 focus:border-primary/50 focus:bg-background transition-all"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="password">Password</Label>
                                 <Input
                                     id="password"
                                     name="password"
@@ -96,26 +100,15 @@ export default function LoginPage() {
                             )}
 
                             <Button disabled={loading} className="w-full font-bold shadow-lg shadow-primary/20" size="lg">
-                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign Up"}
                             </Button>
                         </form>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-4 text-center text-sm text-muted-foreground">
-                        <div className="relative w-full">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-border/50" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-background px-2 text-muted-foreground">
-                                    Or
-                                </span>
-                            </div>
-                        </div>
-
                         <p className="mt-2">
-                            Don&apos;t have an account?{" "}
-                            <Link href="/register" className="font-semibold text-primary hover:underline transition-all">
-                                Sign up
+                            Already have an account?{" "}
+                            <Link href="/login" className="font-semibold text-primary hover:underline transition-all">
+                                Sign in
                             </Link>
                         </p>
                     </CardFooter>
