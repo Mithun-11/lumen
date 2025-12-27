@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CalendarIcon, Clapperboard, Search, Star, X } from "lucide-react"
+import { CalendarIcon, Clapperboard, Star, X } from "lucide-react"
 import { format } from "date-fns"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -49,8 +49,8 @@ const reviewSchema = z.object({
     rating: z.number().min(0.5).max(5),
     content: z.string().optional(),
     watchedDate: z.date(),
-    hasSpoilers: z.boolean().default(false),
-    isRewatch: z.boolean().default(false),
+    hasSpoilers: z.boolean(),
+    isRewatch: z.boolean(),
 })
 
 type SearchResult = {
@@ -169,8 +169,7 @@ export function LogFilmDialog({ children }: { children?: React.ReactNode }) {
                             <DialogTitle className="text-center">Log a Film</DialogTitle>
                         </DialogHeader>
                         <Command className="bg-transparent rounded-none flex-1" shouldFilter={false}>
-                            <div className="flex items-center border-b border-zinc-800 px-3" cmdk-input-wrapper="">
-                                <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                            <div className="flex items-center border-b border-zinc-800 px-3">
                                 <CommandInput
                                     placeholder="Name of film..."
                                     className="placeholder:text-zinc-500"
