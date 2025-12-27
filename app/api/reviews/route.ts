@@ -10,16 +10,17 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { tmdbId, title, releaseDate, posterPath, backdropPath, rating, content, watchedDate, hasSpoilers, isRewatch } = body;
+        const { tmdbId, mediaType, title, releaseDate, posterPath, backdropPath, rating, content, watchedDate, hasSpoilers, isRewatch } = body;
 
-        // 1. Ensure Movie Exists in Local DB
+        // 1. Ensure Movie/TV Show Exists in Local DB
         // We use ON CONFLICT DO NOTHING (or similar logic) to handle race conditions, 
         // but standard SQL 'INSERT ... ON CONFLICT' for Postgres.
         // However, since we are doing raw SQL, let's just try to select and then insert if missing.
 
         let movieId = null;
+        const mediaTypeValue = mediaType || 'movie'; // Default to 'movie' for backwards compatibility
 
-        const movieCheck = await query("SELECT id FROM movies WHERE tmdb_id = $1", [tmdbId]);
+        const movieCheck = await query("SELECT id FROM movies WHERE tmdb_id = $1 AND media_type = $2", [tmdbId, mediaTypeValue]);
 
         if (movieCheck.rowCount && movieCheck.rowCount > 0) {
             movieId = movieCheck.rows[0].id;
@@ -29,10 +30,10 @@ export async function POST(request: Request) {
             // Let's rely on basic data for now to be fast.
 
             const insertMovie = await query(
-                `INSERT INTO movies (tmdb_id, title, release_date, poster_path, backdrop_path)
-         VALUES ($1, $2, $3, $4, $5)
+                `INSERT INTO movies (tmdb_id, media_type, title, release_date, poster_path, backdrop_path)
+         VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING id`,
-                [tmdbId, title, releaseDate || null, posterPath, backdropPath]
+                [tmdbId, mediaTypeValue, title, releaseDate || null, posterPath, backdropPath]
             );
             movieId = insertMovie.rows[0].id;
         }

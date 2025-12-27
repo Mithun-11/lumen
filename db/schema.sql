@@ -21,7 +21,8 @@ CREATE TABLE users (
 -- We only insert movies here when a user interacts with them (e.g. reviews or likes).
 CREATE TABLE movies (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  tmdb_id INTEGER UNIQUE NOT NULL, -- The External ID from The Movie Database
+  tmdb_id INTEGER NOT NULL, -- The External ID from The Movie Database
+  media_type VARCHAR(10) NOT NULL DEFAULT 'movie', -- 'movie' or 'tv'
   title VARCHAR(255) NOT NULL,
   original_title VARCHAR(255),
   release_date DATE,
@@ -31,7 +32,9 @@ CREATE TABLE movies (
   runtime INTEGER, -- In minutes
   vote_average DECIMAL(3, 1), -- TMDB average rating, optional to cache
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
+  UNIQUE(tmdb_id, media_type) -- Same TMDB ID can exist for different media types
 );
 
 -- 3. REVIEWS TABLE

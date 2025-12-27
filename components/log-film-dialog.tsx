@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CalendarIcon, Clapperboard, Star, X } from "lucide-react"
+import { CalendarIcon, Clapperboard, Star, X, Film, Tv } from "lucide-react"
 import { format } from "date-fns"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -55,6 +55,7 @@ const reviewSchema = z.object({
 
 type SearchResult = {
     id: number
+    media_type: 'movie' | 'tv'
     title: string
     release_date: string
     poster_path: string | null
@@ -79,7 +80,7 @@ export function LogFilmDialog({ children }: { children?: React.ReactNode }) {
             }
             setSearching(true)
             try {
-                const res = await fetch(`/api/search/movie?query=${encodeURIComponent(query)}`)
+                const res = await fetch(`/api/search/multi?query=${encodeURIComponent(query)}`)
                 const data = await res.json()
                 setResults(data.results || [])
             } catch (e) {
@@ -112,6 +113,7 @@ export function LogFilmDialog({ children }: { children?: React.ReactNode }) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     tmdbId: selectedMovie.id,
+                    mediaType: selectedMovie.media_type,
                     title: selectedMovie.title,
                     releaseDate: selectedMovie.release_date,
                     posterPath: selectedMovie.poster_path,
@@ -166,12 +168,12 @@ export function LogFilmDialog({ children }: { children?: React.ReactNode }) {
                     // STEP 1: SEARCH
                     <div className="flex flex-col h-[500px]">
                         <DialogHeader className="p-4 border-b border-zinc-800">
-                            <DialogTitle className="text-center">Log a Film</DialogTitle>
+                            <DialogTitle className="text-center">Log a Film or TV Show</DialogTitle>
                         </DialogHeader>
                         <Command className="bg-transparent rounded-none flex-1" shouldFilter={false}>
                             <div className="flex items-center border-b border-zinc-800 px-3">
                                 <CommandInput
-                                    placeholder="Name of film..."
+                                    placeholder="Name of film or TV show..."
                                     className="placeholder:text-zinc-500"
                                     value={query}
                                     onValueChange={setQuery}
@@ -181,31 +183,43 @@ export function LogFilmDialog({ children }: { children?: React.ReactNode }) {
                                 {searching && <div className="py-6 text-center text-sm text-zinc-500">Searching TMDB...</div>}
 
                                 {!searching && results.length === 0 && query.length > 2 && (
-                                    <CommandEmpty>No films found.</CommandEmpty>
+                                    <CommandEmpty>No films or TV shows found.</CommandEmpty>
                                 )}
 
-                                {results.map((movie) => (
+                                {results.map((item) => (
                                     <CommandItem
-                                        key={movie.id}
-                                        value={movie.title}
-                                        onSelect={() => setSelectedMovie(movie)}
+                                        key={`${item.media_type}-${item.id}`}
+                                        value={item.title}
+                                        onSelect={() => setSelectedMovie(item)}
                                         className="flex items-center gap-3 p-2 cursor-pointer hover:bg-zinc-900 rounded-md aria-selected:bg-zinc-900"
                                     >
-                                        {movie.poster_path ? (
+                                        {item.poster_path ? (
                                             <img
-                                                src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                                                alt={movie.title}
+                                                src={`https://image.tmdb.org/t/p/w92${item.poster_path}`}
+                                                alt={item.title}
                                                 className="w-10 h-14 object-cover rounded shadow-sm"
                                             />
                                         ) : (
                                             <div className="w-10 h-14 bg-zinc-800 rounded flex items-center justify-center">
-                                                <Clapperboard className="w-4 h-4 text-zinc-600" />
+                                                {item.media_type === 'tv' ? (
+                                                    <Tv className="w-4 h-4 text-zinc-600" />
+                                                ) : (
+                                                    <Film className="w-4 h-4 text-zinc-600" />
+                                                )}
                                             </div>
                                         )}
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-zinc-100">{movie.title}</span>
-                                            <span className="text-xs text-zinc-500">{movie.release_date?.split("-")[0]}</span>
+                                        <div className="flex flex-col flex-1">
+                                            <span className="font-bold text-zinc-100">{item.title}</span>
+                                            <span className="text-xs text-zinc-500">{item.release_date?.split("-")[0]}</span>
                                         </div>
+                                        <span className={cn(
+                                            "text-[10px] font-bold uppercase px-2 py-0.5 rounded",
+                                            item.media_type === 'tv'
+                                                ? "bg-purple-500/20 text-purple-400"
+                                                : "bg-blue-500/20 text-blue-400"
+                                        )}>
+                                            {item.media_type === 'tv' ? 'TV' : 'Film'}
+                                        </span>
                                     </CommandItem>
                                 ))}
                             </CommandList>
