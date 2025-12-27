@@ -51,15 +51,18 @@ export function PopularFilms({ movies }: PopularFilmsProps) {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {movies.slice(0, 6).map((movie) => (
                     <div key={movie.id} className="movie-card">
-                        <MovieCard
-                            title={movie.title}
-                            year={movie.release_date ? movie.release_date.split('-')[0] : "N/A"}
-                            imageSrc={movie.poster_path || '/images/placeholder.png'}
-                            rating={movie.vote_average}
-                        />
+                        <Link href={`/film/${movie.id}`}>
+                            <MovieCard
+                                title={movie.title}
+                                year={movie.release_date ? movie.release_date.split('-')[0] : "N/A"}
+                                imageSrc={movie.poster_path || '/images/placeholder.png'}
+                                rating={movie.vote_average}
+                            />
+                        </Link>
                     </div>
                 ))}
             </div>
         </section>
     )
 }
+
