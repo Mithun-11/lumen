@@ -1,9 +1,14 @@
 import { getMovieDetails } from "@/lib/tmdb";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, Star } from "lucide-react";
+import { Calendar, Clock, Star, User } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getReviewsForMovie } from "@/lib/actions";
+import { AddReviewForm } from "@/components/add-review-form";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface PageProps {
     params: {
@@ -13,7 +18,12 @@ interface PageProps {
 
 export default async function FilmPage({ params }: PageProps) {
     const { id } = await Promise.resolve(params);
-    const movie = await getMovieDetails(parseInt(id));
+    const tmdbId = parseInt(id);
+
+    const [movie, { reviews, averageRating, totalReviews }] = await Promise.all([
+        getMovieDetails(tmdbId),
+        getReviewsForMovie(tmdbId)
+    ]);
 
     if (!movie) {
         notFound();
@@ -76,10 +86,23 @@ export default async function FilmPage({ params }: PageProps) {
                                 </span>
                             )}
                             <Separator orientation="vertical" className="h-4 bg-gray-400" />
-                            <span className="flex items-center gap-1.5 text-yellow-400">
-                                <Star className="w-4 h-4 fill-current" />
-                                {movie.vote_average.toFixed(1)}
-                            </span>
+                            <div className="flex items-center gap-4">
+                                <span className="flex items-center gap-1.5 text-yellow-500" title="TMDB Rating">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase mr-1">TMDB</span>
+                                    <Star className="w-4 h-4 fill-current" />
+                                    {movie.vote_average.toFixed(1)}
+                                </span>
+                                {totalReviews > 0 && (
+                                    <>
+                                        <Separator orientation="vertical" className="h-4 bg-gray-400" />
+                                        <span className="flex items-center gap-1.5 text-green-500" title="Lumen Community Rating">
+                                            <span className="text-xs font-bold text-muted-foreground uppercase mr-1">Lumen</span>
+                                            <Star className="w-4 h-4 fill-current" />
+                                            {typeof averageRating === 'number' ? averageRating.toFixed(1) : averageRating}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -139,7 +162,7 @@ export default async function FilmPage({ params }: PageProps) {
                     )}
                 </div>
 
-                {/* Right Column (Overview & Cast) */}
+                {/* Right Column (Overview & Cast & Reviews) */}
                 <div className="flex-1 space-y-10">
                     <section>
                         <h3 className="text-2xl font-bold mb-4">Synopsis</h3>
@@ -169,6 +192,66 @@ export default async function FilmPage({ params }: PageProps) {
                                     <p className="text-sm text-muted-foreground mt-1">{actor.character}</p>
                                 </div>
                             ))}
+                        </div>
+                    </section>
+
+                    <Separator className="my-8" />
+
+                    <section id="reviews" className="scroll-mt-20">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-2xl font-bold">Reviews</h3>
+                            <Badge variant="outline" className="text-base px-3 py-1">{totalReviews}</Badge>
+                        </div>
+
+                        <div className="grid md:grid-cols-1 xl:grid-cols-2 gap-12">
+                            {/* Reviews List */}
+                            <div className="space-y-6 order-2 xl:order-1">
+                                {reviews.length === 0 ? (
+                                    <div className="text-center py-12 bg-muted/20 rounded-lg">
+                                        <p className="text-muted-foreground italic mb-2">No reviews yet.</p>
+                                        <p className="text-sm text-muted-foreground">Be the first to share your thoughts!</p>
+                                    </div>
+                                ) : (
+                                    reviews.map((review) => (
+                                        <div key={review.id} className="bg-card border border-border/50 rounded-lg p-5 shadow-sm transition-all hover:bg-card/80">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="w-9 h-9 border border-border">
+                                                        <AvatarImage src={review.user.avatar_url || undefined} />
+                                                        <AvatarFallback><User className="w-4 h-4" /></AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex flex-col leading-none gap-1">
+                                                        <span className="font-semibold text-sm">{review.user.username}</span>
+                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                                                            {format(new Date(review.created_at), 'MMM d, yyyy')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-0.5 text-green-500">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star
+                                                            key={i}
+                                                            className={cn("w-3.5 h-3.5", i < Math.round(review.rating) ? "fill-current" : "text-muted-foreground/20 fill-muted-foreground/20")}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            {review.content && (
+                                                <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line">
+                                                    {review.content}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {/* Add Review Form */}
+                            <div className="order-1 xl:order-2">
+                                <div className="sticky top-24">
+                                    <AddReviewForm movie={movie} />
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>

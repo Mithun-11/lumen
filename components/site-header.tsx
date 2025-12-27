@@ -13,10 +13,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogFilmDialog } from "@/components/log-film-dialog"
+
 import { ModeToggle } from "@/components/mode-toggle"
 import { useAuth } from "@/components/auth-provider"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { SiteSearch } from "@/components/site-search"
 
 export function SiteHeader() {
     const { user, logout } = useAuth();
@@ -40,21 +41,14 @@ export function SiteHeader() {
 
                 <div className="flex flex-1 items-center justify-end space-x-4">
                     <div className="w-full max-w-sm hidden sm:block">
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                type="search"
-                                placeholder="Search films, lists, members..."
-                                className="pl-8 bg-muted/50 border-input focus:bg-background transition-colors"
-                            />
-                        </div>
+                        <SiteSearch />
                     </div>
                     <nav className="flex items-center space-x-2">
                         <ModeToggle />
 
                         {user ? (
                             <>
-                                <LogFilmDialog />
+
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
