@@ -18,17 +18,51 @@ Lumen is a premium social network for film lovers, built with Next.js, Tailwind 
 
 ## Getting Started
 
-1.  **Install dependencies**:
+### Prerequisites
+
+- Node.js (v18 or higher)
+- PostgreSQL installed and running
+
+### Installation
+
+1.  **Clone the repository**:
+    ```bash
+    git clone <repository-url>
+    cd lumen
+    ```
+
+2.  **Install dependencies**:
     ```bash
     npm install
     ```
 
-2.  **Run the development server**:
+3.  **Environment Configuration**:
+    Copy the example environment file:
+    ```bash
+    cp .env.example .env.local
+    ```
+    Open `.env.local` and fill in your details:
+    - `DATABASE_URL`: Your PostgreSQL connection string (e.g., `postgresql://user:pass@localhost:5432/lumen`)
+    - `TMDB_API_KEY`: Get a free key from [The Movie Database](https://www.themoviedb.org/)
+    - `JWT_SECRET`: Any random string for security
+
+4.  **Database Setup**:
+    Create a database named `lumen` (or whatever matches your `DATABASE_URL`).
+    
+    Then initialize the database schema:
+    ```bash
+    # If you have psql installed
+    psql -d lumen -f db/schema.sql
+    ```
+    
+    *Alternatively, you can copy the contents of `db/schema.sql` and run them in your preferred SQL client (like pgAdmin or DBeaver).*
+
+5.  **Run the development server**:
     ```bash
     npm run dev
     ```
 
-3.  **Open your browser**:
+6.  **Open your browser**:
     Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
