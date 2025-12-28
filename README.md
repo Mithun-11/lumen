@@ -108,9 +108,9 @@ To get a local copy up and running, follow these simple steps.
 
 For a detailed walkthrough, check out [WALKTHROUGH.md](./WALKTHROUGH.md).
 
-## 🤝 Contributing
+## 💬 Feedback
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+All feedback, suggestions, and bug reports are welcome! Feel free to open an issue or reach out.
 
 ---
 
