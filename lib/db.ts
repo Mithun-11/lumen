@@ -1,19 +1,16 @@
 import { Pool } from 'pg';
 
+import { env } from '@/lib/env';
+
 let pool: Pool;
 
-if (!process.env.DATABASE_URL) {
-    // We can't initialize the pool without the URL, but we don't want to crash 
-    // the build if it's missing during strict checks, so we handle it gracefully 
-    // or expect it to be there at runtime.
-    console.warn('DATABASE_URL is not defined in environment variables.');
-}
+// Connection check is now handled by env.ts validation
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = env.DATABASE_URL;
 
 // Singleton pattern for the database pool to prevent exhaustng connections
 // in a serverless/Next.js environment during development hot-reloads.
-if (process.env.NODE_ENV === 'production') {
+if (env.NODE_ENV === 'production') {
     pool = new Pool({
         connectionString,
         max: 10, // Adjust based on your Supabase connection limits
@@ -38,10 +35,12 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Helper function to execute raw SQL queries
-export async function query(text: string, params?: any[]) {
+import { QueryResult, QueryResultRow } from 'pg';
+
+export async function query<T extends QueryResultRow = any>(text: string, params?: any[]): Promise<QueryResult<T>> {
     const start = Date.now();
     try {
-        const res = await pool.query(text, params);
+        const res = await pool.query<T>(text, params);
         const duration = Date.now() - start;
         console.log('executed query', { text, duration, rows: res.rowCount });
         return res;

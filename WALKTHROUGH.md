@@ -66,10 +66,14 @@ Lumen is a premium social network for film lovers, built with Next.js, Tailwind 
     Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
-- `app/globals.css`: Custom premium dark theme variables.
-- `components/site-header.tsx`: The main navigation bar.
-- `components/hero.tsx`: The hero section.
-- `components/movie-card.tsx`: Reusable movie poster component.
-- `components/popular-films.tsx`: Grid of trending movies.
-- `components/recent-reviews.tsx`: Recent community activity.
-- `public/images/`: Generated movie poster assets.
+- `app/`: Next.js App Router pages and layouts.
+  - `(home)/_components/`: Components specific to the home page (Hero, PopularFilms, etc.).
+  - `film/[id]/`: Movie details page.
+- `components/`: Global shared components (Header, Search, MovieCard).
+- `lib/`: Utilities and configuration.
+  - `env.ts`: Centralized environment variable validation (Zod).
+  - `db.ts`: Strict raw SQL database connection.
+  - `tmdb.ts`: Type-safe TMDB API client.
+  - `types/`: Shared TypeScript definitions.
+- `db/schema.sql`: Database schema definition.
+- `public/`: Static assets.

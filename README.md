@@ -75,17 +75,24 @@ To get a local copy up and running, follow these simple steps.
 1.  **Clone the repo**
     ```sh
     git clone https://github.com/your_username/lumen.git
+    cd lumen
     ```
 2.  **Install NPM packages**
     ```sh
     npm install
+    # or
+    yarn install
+    # or
+    pnpm install
     ```
 3.  **Set up Environment Variables**
     Copy `.env.example` to `.env.local` and fill in your keys.
     ```sh
     cp .env.example .env.local
     ```
-    *You need a TMDB API Key and a Postgres Connection String.*
+    You will need:
+    - `TMDB_API_KEY`: [Get a free one here](https://www.themoviedb.org/documentation/api).
+    - `DATABASE_URL`: A PostgreSQL connection string (e.g. Supabase, Neon, or local).
     
 4.  **Initialize Database**
     Run the included schema file to create tables.
@@ -97,6 +104,7 @@ To get a local copy up and running, follow these simple steps.
     ```sh
     npm run dev
     ```
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 For a detailed walkthrough, check out [WALKTHROUGH.md](./WALKTHROUGH.md).
 
